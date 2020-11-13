@@ -33,7 +33,8 @@ void write_tf ( char *pat, int M, int TF[][256] )
 	int state, x;
 
 	for ( state = 0; state <= M; ++state )
-    // FIXME: Candidate for parallelism (OpenMP?).
+
+		// FIXME: Candidate for parallelism (OpenMP?).
 		for ( x = 0; x < 256; ++x )
 			TF[state][x] = NextMachineState ( pat, M,  state, x );
 }
@@ -41,8 +42,8 @@ void write_tf ( char *pat, int M, int TF[][256] )
 /* Prints all occurrences of pat in txt */
 bool DFA_Search ( char *pat, int patsize, char *txt, int txtsize )
 {
-  // FIXME: Could be too much pressure on stack.
-  //        Better to change it to heap allocation.
+	// FIXME: Could be too much pressure on stack.
+	//        Better to change it to heap allocation.
 	int TF[patsize + 1][256];
 
 	write_tf ( pat, patsize, TF );
@@ -84,8 +85,9 @@ bool horspool_search ( char *txt, int txtLen, char *match, int matchLen )
 
 	for ( i = 0; i < matchLen; i++ )
 		badCharHtable[ ( int ) match[i]] = i;
-  while ( i < 256 )
-    badCharHtable[i++] = -1;
+
+	while ( i < 256 )
+		badCharHtable[i++] = -1;
 
 	int shift = 0;
 
