@@ -1,0 +1,28 @@
+blocklist.o: blocklist.c headers/blocklist.h headers/mem_ops.h \
+ headers/mem_ops.h headers/utils.h headers/strsec.h
+file_ops.o: file_ops.c headers/file_ops.h headers/utils.h \
+ headers/mem_ops.h
+match_algorithms.o: match_algorithms.c headers/utils.h \
+ headers/match_algorithms.h headers/utils.h
+matchlist.o: matchlist.c headers/mem_ops.h headers/utils.h \
+ headers/strsec.h headers/mem_ops.h headers/match_algorithms.h \
+ headers/utils.h
+mem_ops.o: mem_ops.c headers/mem_ops.h headers/utils.h
+OctopusWAF.o: OctopusWAF.c headers/mem_ops.h headers/validate.h \
+ headers/opt_extract.h headers/mem_ops.h headers/validate.h \
+ headers/strsec.h headers/utils.h headers/opt_extract.h headers/server.h \
+ headers/proxy.h headers/blocklist.h headers/matchlist.h
+opt_extract.o: opt_extract.c headers/opt_extract.h headers/mem_ops.h \
+ headers/validate.h headers/opt_extract.h headers/strsec.h \
+ headers/utils.h
+proxy.o: proxy.c headers/proxy.h headers/blocklist.h headers/mem_ops.h \
+ headers/validate.h headers/opt_extract.h headers/strsec.h \
+ headers/utils.h headers/matchlist.h
+server.o: server.c headers/server.h headers/proxy.h headers/blocklist.h \
+ headers/mem_ops.h headers/validate.h headers/opt_extract.h \
+ headers/strsec.h headers/utils.h headers/matchlist.h
+strsec.o: strsec.c headers/strsec.h headers/mem_ops.h
+utils.o: utils.c headers/utils.h headers/mem_ops.h
+validate.o: validate.c headers/utils.h headers/validate.h \
+ headers/opt_extract.h headers/mem_ops.h headers/validate.h \
+ headers/strsec.h headers/utils.h
