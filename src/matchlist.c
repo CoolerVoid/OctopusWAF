@@ -61,6 +61,7 @@ char *matchlist ( char *input, int input_len, short option_algorithm )
 			if ( ! at_list )
 				{
 					free ( line );
+					line = NULL;
 					line_len = 0;
 				}
 		}
@@ -70,8 +71,6 @@ char *matchlist ( char *input, int input_len, short option_algorithm )
 	if ( at_list )
 		return line;
 
-	free ( line );
+	free ( line );  // if line is NULL this will work fine!
 	return NULL;
 }
-
-
