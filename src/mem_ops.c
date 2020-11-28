@@ -72,6 +72,19 @@ void *xrealloc ( void *ptr, size_t size )
 	return p;
 }
 
+char *xstrdup ( char *str )
+{
+	char *p;
+
+	if ( ! ( p = strdup ( str ) ) )
+		{
+			die ( "cannot duplicate string." );
+			exit ( 1 );
+		}
+
+	return p;
+}
+
 // FIX: This function is unecessary. Try to free a block pointed by NULL simply does nothing.
 //      This behavior is part of the standard (see ISO 9899:1999 7.20.3.2 § 2).
 //void xfree ( void **ptr )
