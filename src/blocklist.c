@@ -4,37 +4,39 @@
 #include "strsec.h"
 
 //read lines of file
-bool blocklist_ip(char * addr)
+bool blocklist_ip ( char *addr )
 {
-	FILE * arq;
-	bool at_list=false;
+	FILE *arq;
+	bool at_list = false;
 
-	arq = fopen("config/blocklist_ip.txt", "r");
+  // FIX: Let's allocate dynamically the line, so line of any size can be processed.
+  char *line;
+  size_t size;
 
-	if( arq == NULL )
-	{
+	arq = fopen ( "config/blocklist_ip.txt", "r" );
 
-		DEBUG("error to open() file"); 	 
-		exit(0);
-	}
+	if ( arq == NULL )
+		{
+			DEBUG ( "error to open() file" );
+			exit ( 0 );
+		}
 
-	char line[128];
+  line = NULL; size = 0;
+  while ( getline( &line, &size, arq ) != -1 && ! at_list )
+    {
+      if ( strstr( line, addr ) )
+        at_list = true;
 
-	while( fgets(line,sizeof line,arq) && at_list==false )
-	{    
-		if(strnstr(line,addr,128))
-			at_list=true;
-	}
+      free( line );
+      line = NULL;
+      size = 0;
+    }
 
-	if( fclose(arq) == EOF )
-	{
-		DEBUG("Error in close() file config/blocklist_ip.txt ");
-		return false;
-	}
-	arq=NULL;
-
+	if ( fclose ( arq ) == EOF )
+		{
+			DEBUG ( "Error in close() file config/blocklist_ip.txt " );
+			return false;
+		}
 
 	return at_list;
 }
-
-
