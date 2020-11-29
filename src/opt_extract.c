@@ -7,12 +7,13 @@
 #include "strsec.h"
 #include "mem_ops.h"
 
+struct choice param;
+
 void init_banner_octopus ( void )
 {
 	puts (
 	    GREEN
 	    "\n\t\tCoded by CoolerVoid - coolerlair[at]gmail[dot]com\n\n"
-	    LAST
 	    CYAN
 	    "       ,'''`.\n"
 	    "      / _  _ \\\n"
@@ -71,64 +72,63 @@ void parser_opts ( int argc, char **argv )
 	while ( ( c = getopt_long ( argc, argv, "h:r:d:m:", long_options, NULL ) ) != -1 )
 		switch ( c )
 			{
-        // host
+				// host
 				case 'h':
-					if ( strnlen ( optarg, 65 ) <= 64 )
-						{
-							burn_mem ( param.hostarg, 0, 127 ); // preserve 1buyte to canary
-							strlcpy ( param.hostarg, optarg, 128 );
-						}
+
+					// FIXME: Why to allocate 128 bytes for hostarg if the option is limited to 64 chars?
+					//        Yet, 'optarg' is a copy of argv[n]. Don't need to use any special strlen function!
+					if ( strlen ( optarg ) <= 64 )
+            param.hostarg = optarg;
 					else
 						die ( "Error at param host" );
 
 					break;
 
 				case 'r':
-					if ( strnlen ( optarg, 65 ) <= 64 )
-						{
-							burn_mem ( param.redirectarg, 0, 127 ); // stack cookie preserve
-							strlcpy ( param.redirectarg, optarg, 128 );
-						}
+
+					// FIXME: Why to allocate 128 bytes for recirectarg if the option is limited to 64 chars?
+					//        Yet, 'optarg' is a copy of argv[n]. Don't need to use any special strlen function!
+					if ( strlen ( optarg ) <= 64 )
+            param.redirectarg = optarg;
 					else
 						die ( "Error at param host" );
 
 					break;
 
-
 				case 'd':
 					param.debug = true;
-					printf ( "%s DEBUG mode ON! %s\n", YELLOW, LAST );
+					puts ( YELLOW "DEBUG mode ON!" LAST );
 					break;
 
 				case 'm':
-					if ( strnlen ( optarg, 12 ) <= 11 )
+				{
+          int i;
+					const char **p;
+					static const char *algos[] =
+					{
+						"dfa", "horspool", "karp-rabin", "pcre", NULL
+					};
+
+					p = algos;
+					i = 1;
+
+					while ( *p )
 						{
-							char algorithm[12];
+							if ( ! strcmp ( optarg, *p ) )
+								{
+									param.option_algorithm = i;
+									break;
+								}
 
-							burn_mem ( algorithm, 0, 11 );
-							strlcpy ( algorithm, optarg, 11 );
-
-							if ( strnstr ( algorithm, "dfa", 3 ) )
-								options_match = 1;
-
-							if ( strnstr ( algorithm, "horspool", 8 ) )
-								options_match = 2;
-
-							if ( strnstr ( algorithm, "karp-rabin", 10 ) )
-								options_match = 3;
-
-							if ( strnstr ( algorithm, "pcre", 4 ) )
-								options_match = 4;
-
-							if ( options_match == 0 )
-								die ( "need match argv example --match dfa" );
-
-							param.option_algorithm = options_match;
+							++i;
+							++p;
 						}
-					else
-						die ( "Error at param Log" );
 
-					break;
+					if ( ! *p )
+						die ( "need match argv example --match dfa" );
+				}
+
+				break;
 
 				case '?':
 					if ( optopt == 'h' || optopt == 'r' || optopt == 'm' )

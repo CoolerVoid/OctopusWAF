@@ -5,13 +5,13 @@
 
 struct choice
 {
-	char hostarg[128];
-	char redirectarg[128];
+	char *hostarg;
+	char *redirectarg;
 	bool debug;
-	short option_algorithm;
+	int  option_algorithm;
 };
 
-struct choice param;
+extern struct choice param;
 
 void parser_opts ( int argc, char **argv );
 void init_banner_octopus ( void );
