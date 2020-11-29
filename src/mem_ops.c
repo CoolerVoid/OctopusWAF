@@ -1,4 +1,8 @@
+#include <stdlib.h>
+#include <string.h>
 #include <assert.h>
+#include <stdint.h>   // for SIZE_MAX
+
 #include "mem_ops.h"
 #include "utils.h"
 
@@ -10,6 +14,7 @@ void *xallocaarray ( size_t nmemb, size_t size )
 
 	size_t maxmem = nmemb * size;
 
+	// FIXME: VLA? Since this is local, it could be allocated on stack!!!
 	char ptr2[maxmem];
 
 	void *ptr = ( void * ) ptr2;
@@ -17,7 +22,7 @@ void *xallocaarray ( size_t nmemb, size_t size )
 	if ( ptr == NULL )
 		die ( "error in xallocarray() function" );
 
-	memset ( ptr, '\0', maxmem );
+	memset ( ptr, 0, maxmem );
 
 	return ptr;
 }
@@ -36,7 +41,9 @@ void *xmallocarray ( size_t nmemb, size_t size )
 	return ptr;
 }
 
-static void *xmalloc_fatal ( size_t size )
+/* DIE() will exit, _Noreturn is ISO 9899:1999 (and above) standard. */
+_Noreturn
+static void xmalloc_fatal ( size_t size )
 {
 	DEBUG ( "\n Size dbg: %lu\n", size );
 	DIE ( "Memory FAILURE!" );
@@ -46,8 +53,9 @@ void *xmalloc ( size_t size )
 {
 	void *ptr = malloc ( size );
 
+	// FIX: xmalloc_fatal() never returns.
 	if ( ptr == NULL )
-		return xmalloc_fatal ( size );
+		xmalloc_fatal ( size );
 
 	return ptr;
 }
@@ -56,8 +64,9 @@ void *xcalloc ( size_t mem, size_t size )
 {
 	void *ptr = calloc ( mem, size );
 
+	// FIX: xmalloc_fatal() never returns.
 	if ( ptr == NULL )
-		return xmalloc_fatal ( mem * size );
+		xmalloc_fatal ( mem * size );
 
 	return ptr;
 }
@@ -66,8 +75,9 @@ void *xrealloc ( void *ptr, size_t size )
 {
 	void *p = realloc ( ptr, size );
 
+	// FIX: xmalloc_fatal() never returns.
 	if ( p == NULL )
-		return xmalloc_fatal ( size );
+		xmalloc_fatal ( size );
 
 	return p;
 }
@@ -77,10 +87,7 @@ char *xstrdup ( char *str )
 	char *p;
 
 	if ( ! ( p = strdup ( str ) ) )
-		{
-			die ( "cannot duplicate string." );
-			exit ( 1 );
-		}
+		DIE ( "cannot duplicate string." );
 
 	return p;
 }
@@ -99,6 +106,10 @@ char *xstrdup ( char *str )
 //}
 #define xfree(pp) { free( *pp ); *pp = NULL; }
 
+// FIX: Those functions aren't necessary.
+//      Qualifying pointers as volatile will only try to prevent aliasing. Which is useful for optimizations.
+
+#if 0
 volatile void *burn_mem ( volatile void *dst, int c, size_t len )
 {
 	volatile char *buf;
@@ -141,3 +152,4 @@ volatile void *burn_memmove ( volatile void *dst, volatile void *src, size_t len
 
 	return dst;
 }
+#endif

@@ -1,7 +1,10 @@
-#include "mem_ops.h"
-#include "utils.h"
-#include "strsec.h"
+#include <stdio.h>
+#include <stdlib.h>
+#include <stdbool.h>
+#include <string.h>
+
 #include "match_algorithms.h"
+#include "utils.h"
 
 /* read lines of file matchlist.txt and test if match strings
 

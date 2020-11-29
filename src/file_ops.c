@@ -1,6 +1,8 @@
+#include <stdio.h>
+
 #include "file_ops.h"
 #include "mem_ops.h"
-
+#include "utils.h"
 
 // write line in file
 void WriteFile ( char *file, char *str )
@@ -28,6 +30,3 @@ void WriteFile ( char *file, char *str )
 			exit ( 0 ); // FIXME: Shouln't be different than 0?
 		}
 }
-
-
-

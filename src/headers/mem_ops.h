@@ -1,14 +1,6 @@
 #ifndef MEM_OPS_H__
 #define MEM_OPS_H__
 
-#include <stdio.h>
-#include <sys/types.h>
-#include <string.h>
-#include <stdlib.h>
-#include <assert.h>
-#include <time.h>
-#include <limits.h>
-#include <stdint.h>
 #include <stddef.h>
 
 #define XFREE(x) xfree((void **)x);
@@ -23,8 +15,9 @@ void *xrealloc ( void *ptr, size_t size );
 void xfree ( void **ptr );
 char *xstrdup ( char *str );
 
-volatile void *burn_mem ( volatile void *dst, int c, size_t len );
-volatile void *burn_memcpy ( volatile void *dst, volatile void *src, size_t len );
-volatile void *burn_memmove ( volatile void *dst, volatile void *src, size_t len );
+// FIX: Don't need those 'volatile' qualifiers and we can use memset, memcpy and memmove!
+#define burn_mem(dst,c,len) memset( (dst), (c), (len) )
+#define burn_memcpy(dst,src,len) memset( (dst), (src), (len) )
+#define burn_memmove(dst,src,len) memmove( (dst), (src), (len) )
 
 #endif

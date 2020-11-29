@@ -1,5 +1,8 @@
-#include "utils.h"
+#include <stdbool.h>
+#include <pcre.h>
+
 #include "match_algorithms.h"
+#include "utils.h"
 
 int NextMachineState ( char *pat, int M, int state, int x )
 {
@@ -7,7 +10,8 @@ int NextMachineState ( char *pat, int M, int state, int x )
 	if ( state < M && x == pat[state] )
 		return state + 1;
 
-	register int fix = state, i = 0;
+  // FIX: 'register' reserved word don't do what most people think it does!
+	int fix = state, i = 0;
 
 	while ( fix > 0 )
 		{
@@ -28,7 +32,7 @@ int NextMachineState ( char *pat, int M, int state, int x )
 }
 
 // create automata table
-void write_tf ( char *pat, int M, int TF[][256] )
+static void write_tf ( char *pat, int M, int TF[][256] )
 {
 	int state, x;
 
@@ -64,7 +68,7 @@ bool DFA_Search ( char *pat, int patsize, char *txt, int txtsize )
 }
 
 /*** utility function to return max of two ints ***/
-int max_horspool ( int a, int b )
+static int max_horspool ( int a, int b )
 {
 	return ( a > b ) ? a : b;
 }
@@ -181,4 +185,3 @@ bool pcre_regex_search ( const char *string, int string_len, const char *express
 /*
   Match with GPU something with NVIDIA's CUDA or OpenCL ? relax at the future i write this... :-D
 */
-

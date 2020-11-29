@@ -1,7 +1,9 @@
+#include <stdio.h>
+#include <stdbool.h>
+#include <string.h>
+
 #include "blocklist.h"
-#include "mem_ops.h"
 #include "utils.h"
-#include "strsec.h"
 
 //read lines of file
 bool blocklist_ip ( char *addr )

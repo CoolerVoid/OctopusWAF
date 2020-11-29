@@ -4,13 +4,6 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
-#include <stdbool.h>
-#include <unistd.h>
-#include <signal.h>
-#include <ctype.h>
-#include <sys/resource.h>
-#include <errno.h>
-#include <sys/types.h>
 #include <time.h>
 
 // set DEBUG ON

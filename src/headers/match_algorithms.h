@@ -1,16 +1,11 @@
 #ifndef MATCH_ALGORITHMS_H__
 #define MATCH_ALGORITHMS_H__
 
-#include <stdio.h>
-#include <sys/types.h>
-#include <string.h>
 #include <stdbool.h>
-#include "utils.h"
 #include <pcre.h>
 
 // DFA search algorithm
 int NextMachineState ( char *pat, int M, int state, int x );
-void write_tf ( char *pat, int M, int TF[][256] );
 bool DFA_Search ( char *pat, int patsize, char *txt, int txtsize );
 
 /*

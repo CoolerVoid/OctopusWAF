@@ -1,4 +1,27 @@
+#include <assert.h>
+#include <sys/socket.h>
+#include <arpa/inet.h>
+
+#include <openssl/ssl.h>
+#include <openssl/err.h>
+#include <openssl/rand.h>
+
+#include <event2/event.h>
+#include <event2/bufferevent.h>
+#include <event2/bufferevent_ssl.h>
+#include <event2/buffer.h>
+#include <event2/listener.h>
+#include <event2/util.h>
+#include <event2/http.h>
+#include <event2/keyvalq_struct.h>
+
+#include "blocklist.h"
 #include "proxy.h"
+#include "utils.h"
+#include "mem_ops.h"
+#include "opt_extract.h"
+#include "validate.h"
+#include "matchlist.h"
 
 char *addr_2_str ( struct sockaddr *res )
 {
