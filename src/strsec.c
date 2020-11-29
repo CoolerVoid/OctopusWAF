@@ -1,4 +1,4 @@
-/*	$OpenBSD: strlcpy, strlcat,v 1.11 2006/05/05 15:27:38 millert Exp $	*/
+/*  $OpenBSD: strlcpy, strlcat,v 1.11 2006/05/05 15:27:38 millert Exp $ */
 
 /*
  * Copyright (c) 1998 Todd C. Miller <Todd.Miller@courtesan.com>
@@ -30,32 +30,33 @@
  * will be copied.  Always NUL terminates (unless siz == 0).
  * Returns strlen(src); if retval >= siz, truncation occurred.
  */
-size_t strlcpy(char *dst, const char *src, size_t siz)
+size_t strlcpy ( char *dst, const char *src, size_t siz )
 {
 	char *d = dst;
 	const char *s = src;
 	size_t n = siz;
 
 	/* Copy as many bytes as will fit */
-	if (n != 0) 
-	{
-		while (--n != 0) 
+	if ( n != 0 )
 		{
-			if ((*d++ = *s++) == '\0')
-				break;
+			while ( --n != 0 )
+				{
+					if ( ( *d++ = *s++ ) == '\0' )
+						break;
+				}
 		}
-	}
 
 	/* Not enough room in dst, add NUL and traverse rest of src */
-	if (n == 0) 
-	{
-		if (siz != 0)
-			*d = '\0';		/* NUL-terminate dst */
-		while (*s++)
-			;
-	}
+	if ( n == 0 )
+		{
+			if ( siz != 0 )
+				*d = '\0';      /* NUL-terminate dst */
 
-	return(s - src - 1);	/* count does not include NUL */
+			while ( *s++ )
+				;
+		}
+
+	return ( s - src - 1 ); /* count does not include NUL */
 }
 
 /*
@@ -65,41 +66,43 @@ size_t strlcpy(char *dst, const char *src, size_t siz)
  * Returns strlen(src) + MIN(siz, strlen(initial dst)).
  * If retval >= siz, truncation occurred.
  */
-size_t strlcat(char *dst, const char *src, size_t siz)
+size_t strlcat ( char *dst, const char *src, size_t siz )
 {
-	register char *d = dst;
-	register const char *s = src;
-	register size_t n = siz;
+	char *d = dst;
+	const char *s = src;
+	size_t n = siz;
 	size_t dlen;
 
 	/* Find the end of dst and adjust bytes left but don't go past end */
-	while (n-- != 0 && *d != '\0')
+	while ( n-- != 0 && *d != '\0' )
 		d++;
 
 	dlen = d - dst;
 	n = siz - dlen;
 
-	if (n == 0)
-		return(dlen + strlen(s));
+	if ( n == 0 )
+		return ( dlen + strlen ( s ) );
 
-	while (*s != '\0') 
-	{
-		if (n != 1) 
+	while ( *s != '\0' )
 		{
-			*d++ = *s;
-			n--;
+			if ( n != 1 )
+				{
+					*d++ = *s;
+					n--;
+				}
+
+			s++;
 		}
-		s++;
-	}
+
 	*d = '\0';
 
-	return(dlen + (s - src));	/* count does not include NUL */
+	return dlen + ( s - src ); /* count does not include NUL */
 }
 
 /*-strnstr() function
  * Copyright (c) 2001 Mike Barcroft <mike@FreeBSD.org>
  * Copyright (c) 1990, 1993
- *	The Regents of the University of California.  All rights reserved.
+ *  The Regents of the University of California.  All rights reserved.
  *
  * This code is derived from software contributed to Berkeley by
  * Chris Torek.
@@ -132,38 +135,42 @@ size_t strlcat(char *dst, const char *src, size_t siz)
  * Find the first occurrence of find in s, where the search is limited to the
  * first slen characters of s.
  */
-char *
-strnstr(const char *s, const char *find, size_t slen)
+char *strnstr ( const char *s, const char *find, size_t slen )
 {
 	char c, sc;
 	size_t len;
 
-	if ((c = *find++) != '\0') {
-		len = strlen(find);
-		do {
-			do {
-				if (slen-- < 1 || (sc = *s++) == '\0')
-					return (NULL);
-			} while (sc != c);
-			if (len > slen)
-				return (NULL);
-		} while (strncmp(s, find, len) != 0);
-		s--;
-	}
-	return ((char *)s);
+	if ( ( c = *find++ ) != '\0' )
+		{
+			len = strlen ( find );
+
+			do
+				{
+					do
+						{
+							if ( slen-- < 1 || ( sc = *s++ ) == '\0' )
+								return NULL;
+						} while ( sc != c );
+
+					if ( len > slen )
+						return NULL;
+				} while ( strncmp ( s, find, len ) != 0 );
+
+			s--;
+		}
+
+	return ( char * )s;
 }
 
-
-//custom func 
-char *xstrndup(const char *s, size_t n)
+//custom func
+char *xstrndup ( const char *s, size_t n )
 {
-	char* new = xmalloc(n+1);
+	char *new = xmalloc ( n + 1 );
 
-	if (new) 
-	{
-		strncpy(new, s, n);
-		new[n] = '\0';
-	}
+  // FIX: If xmalloc() fails, it never gets here, so
+  //      checking for pointer validity isn't necessary.
+  strncpy ( new, s, n );
+	new[n] = '\0';
 
 	return new;
 }
