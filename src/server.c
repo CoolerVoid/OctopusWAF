@@ -49,32 +49,37 @@ void start_octopus_server ( void )
 			die ( "Program closes" );
 		}
 
-	burn_mem ( &listen_on_addr, 0, sizeof ( listen_on_addr ) );
-	socklen = sizeof ( listen_on_addr );
+	burn_mem ( &listen_on_addr, 0, sizeof listen_on_addr );
+	socklen = sizeof listen_on_addr;
 
 	if ( evutil_parse_sockaddr_port ( param.hostarg,
 	                                  ( struct sockaddr * ) &listen_on_addr, &socklen ) < 0 )
 		{
+      // FIXME: atoi() don't check for errors! Return value is undefined in case of error!
+      //        See man for atoi and strtol where is says:
+      //
+      //        "The implementation MAY also set errno to EINVAL in case no conversion was 
+      //         performed (no digits seen, and 0 returned)."
 			int p = atoi ( param.hostarg );
+
 			struct sockaddr_in *sin = ( struct sockaddr_in * ) &listen_on_addr;
 
 			if ( p < 1 || p > 65535 )
 				die ( "Port is not ok" );
 
-
 			socklen = sizeof ( struct sockaddr_in );
 
 			if ( sin->sin_family == AF_INET )
 				{
-
 					sin->sin_port = ntohs ( sin->sin_port );
-					sin->sin_addr.s_addr  =  htonl ( 0x7f000001 ); //&((struct sockaddr_in*)&sin)->sin_addr;
+					sin->sin_addr.s_addr =  htonl ( 0x7f000001 ); //&((struct sockaddr_in*)&sin)->sin_addr;
 				}
 			else if ( sin->sin_family  == AF_INET6 )
 				{
+          // FIXME: Assuming V4MAPPED IPv6 here... This can be problematic!
 					struct sockaddr_in6 *sin6 = ( struct sockaddr_in6 * ) &sin;
-					sin->sin_port  = ntohs ( sin6->sin6_port );
-					sin->sin_addr.s_addr  =  htonl ( 0x7f000001 ); //&((struct sockaddr_in6*)&sin)->sin6_addr;
+					sin->sin_port = ntohs ( sin6->sin6_port );
+					sin->sin_addr.s_addr =  htonl ( 0x7f000001 ); //&((struct sockaddr_in6*)&sin)->sin6_addr;
 				}
 		}
 
@@ -86,11 +91,10 @@ void start_octopus_server ( void )
 
 	base = event_base_new();
 
-	if ( !base )
+	if ( ! base )
 		{
 			perror ( "event_base_new()" );
 			die ( "Try again..." );
-
 		}
 
 	if ( use_ssl )
@@ -129,7 +133,6 @@ void start_octopus_server ( void )
 
 	evconnlistener_free ( listener );
 	event_base_free ( base );
-
 
 	die ( "OctopusWAF close" );
 }
