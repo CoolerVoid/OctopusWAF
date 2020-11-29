@@ -5,10 +5,7 @@
 #include <unistd.h>
 #include <signal.h>
 #include <sys/resource.h>
-//#include <sys/types.h>
-//#include <time.h>
 #include <ctype.h>
-//#include <assert.h>
 
 #include "utils.h"
 #include "mem_ops.h"
@@ -19,7 +16,7 @@ void die ( char *msg )
 	exit ( 0 ); // FIXME: Should be EXIT_FAILURE, isn't it?
 }
 
-void No_Pause_Waf()
+static void No_Pause_Waf( int sig )
 {
 	DEBUG ( "\n"
 	        " When start Waf\n"
@@ -47,7 +44,7 @@ void load_signal_alarm ( void )
 	const int *p;
 
 	struct sigaction sigIntHandler =
-	{ .sa_handler = ( void ( * ) ( int ) ) No_Pause_Waf };
+	{ .sa_handler = No_Pause_Waf };
 
 	// FIX: Really not necessary because the entire bitmask is zeroed above.
 	//if ( sigemptyset ( &sigIntHandler.sa_mask ) )
@@ -197,13 +194,11 @@ char *deadspace ( char *str )
 //	}
 //}
 
-// random case return string, input= tomato output=ToMatO or tOmATo...
 char *all2lowcase ( char *str )
 {
-	char *str_new = xstrdup ( str );
-	char *p;
+	char *str_new, *p;
 
-	p = str_new;
+	p = str_new = xstrdup( str );
 
 	while ( *p )
 		{

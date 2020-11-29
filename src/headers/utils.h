@@ -40,7 +40,6 @@
 #define max(a,b) ((a)>(b)?(a):(b))
 
 void die ( char *msg );
-void No_Pause_Waf();
 void no_write_coredump ( void );
 void load_signal_alarm ( void );
 char from_hex ( char ch );
