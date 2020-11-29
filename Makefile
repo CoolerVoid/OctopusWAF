@@ -8,7 +8,7 @@ all:
 	@echo "       ^\'"
 	$(MAKE) -C src
 
-.PHONY: clean distclean
+.PHONY: clean distclean build-dep help
 
 clean:
 	$(MAKE) -C src clean
@@ -16,4 +16,13 @@ clean:
 distclean:
 	$(MAKE) -C src distclean
 
+build-dep:
+	$(MAKE) -C src build-dep
 
+help:
+	@echo "There are four extra targets besides the default 'all':"
+	@echo
+	@echo "clean     - Deletes all temporary object files after compilation."
+	@echo "distclean - Deletes all temporary object files and the compiled executable."
+	@echo "build-dep - Create 'make.dep' in 'src/' directory."
+	@echo "help      - Shows this message."

@@ -12,7 +12,7 @@ LDFLAGS=
 LIBS=-levent_openssl -lssl -lcrypto -levent -lpcre 
 INCLUDEDIRS=headers
 
-CFLAGS=-W -Wall -O2 -Wno-unused-variable -Wno-unused-parameter $(HARDENING) -I$(INCLUDEDIRS)
+CFLAGS=-W -Wall -O2 -mtune=native -Wno-unused-variable -Wno-unused-parameter $(HARDENING) -I$(INCLUDEDIRS)
 
 ifeq ($(shell uname -s),Darwin)
 	LDFLAGS=-Wl
@@ -42,10 +42,13 @@ validate.o
 # Dependencies to build object files.
 include make.dep
 
-.PHONY: clean distclean
+.PHONY: clean distclean build-deps
 
 clean:
 	-rm $(OBJECTS)
 
 distclean: clean
 	rm ../bin/OctopusWAF
+
+build-deps:
+	$(CC) -MM -I$(INCLUDEDIRS) *.c > make.dep
