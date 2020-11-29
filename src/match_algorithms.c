@@ -37,7 +37,6 @@ static void write_tf ( char *pat, int M, int TF[][256] )
 	int state, x;
 
 	for ( state = 0; state <= M; ++state )
-
 		// FIXME: Candidate for parallelism (OpenMP?).
 		for ( x = 0; x < 256; ++x )
 			TF[state][x] = NextMachineState ( pat, M,  state, x );
@@ -65,12 +64,6 @@ bool DFA_Search ( char *pat, int patsize, char *txt, int txtsize )
 		}
 
 	return false;
-}
-
-/*** utility function to return max of two ints ***/
-static int max_horspool ( int a, int b )
-{
-	return ( a > b ) ? a : b;
 }
 
 /*
@@ -112,7 +105,7 @@ bool horspool_search ( char *txt, int txtLen, char *match, int matchLen )
 						shift += 1;
 				}
 			else
-				shift += max_horspool ( 1, nInd - badCharHtable[ ( int ) txt[shift + nInd]] );
+				shift += max ( 1, nInd - badCharHtable[ ( int ) txt[shift + nInd]] );
 		}
 
 	return false;
@@ -150,7 +143,6 @@ bool Rabin_Karp_search ( char *input, int input_len, char *match, int match_len 
 
 	while ( j <= sub )
 		{
-
 			if ( var1 == var2 && memcmp ( match, input + j, match_len ) == 0 )
 				return true;
 
@@ -175,11 +167,10 @@ bool pcre_regex_search ( const char *string, int string_len, const char *express
 			exit ( 0 );
 		}
 
-	int rc = pcre_exec ( re, NULL, string, string_len, offset, 0, ovector, 100 );
+	int rc = pcre_exec ( re, NULL, string, string_len, offset, 0, ovector, sizeof ovector / sizeof ovector[0] );
 	pcre_free ( re );
 
 	return rc > 0;
-
 }
 
 /*
