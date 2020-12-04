@@ -49,7 +49,6 @@ static void option_banner_octopus ( void )
 void parser_opts ( int argc, char **argv )
 {
 	char c;
-	short options_match = 0;
 
 	if ( argc < 6 )
 		{

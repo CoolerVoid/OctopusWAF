@@ -221,7 +221,6 @@ void accept_cb ( struct evconnlistener *listener, evutil_socket_t fd,
 {
 	int use_wrapper = 1;
 	struct bufferevent *b_out, *b_in;
-	bool allow_addr = false;
 
 	b_in = bufferevent_socket_new ( base, fd, BEV_OPT_CLOSE_ON_FREE | BEV_OPT_DEFER_CALLBACKS );
 

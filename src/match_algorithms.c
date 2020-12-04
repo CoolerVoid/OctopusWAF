@@ -6,12 +6,14 @@
 
 int NextMachineState ( char *pat, int M, int state, int x )
 {
+	// FIX: 'register' reserved word don't do what most people think it does!
+	int fix, i;
+
 	// If the character N is same as next character in pattern, then simply increment state
 	if ( state < M && x == pat[state] )
 		return state + 1;
 
-  // FIX: 'register' reserved word don't do what most people think it does!
-	int fix = state, i = 0;
+	fix = state;
 
 	while ( fix > 0 )
 		{
@@ -37,6 +39,7 @@ static void write_tf ( char *pat, int M, int TF[][256] )
 	int state, x;
 
 	for ( state = 0; state <= M; ++state )
+
 		// FIXME: Candidate for parallelism (OpenMP?).
 		for ( x = 0; x < 256; ++x )
 			TF[state][x] = NextMachineState ( pat, M,  state, x );
@@ -48,14 +51,15 @@ bool DFA_Search ( char *pat, int patsize, char *txt, int txtsize )
 	// FIXME: Could be too much pressure on stack.
 	//        Better to change it to heap allocation.
 	int TF[patsize + 1][256];
+	int i, state;
 
 	write_tf ( pat, patsize, TF );
 
-	int i = 0, state = 0;
+	i = state = 0;
 
 	while ( i < txtsize )
 		{
-			state = TF[state][ ( int ) txt[i]];
+			state = TF[state][ ( int ) txt[i] ];
 
 			if ( state == patsize )
 				return true;
@@ -77,7 +81,7 @@ bool DFA_Search ( char *pat, int patsize, char *txt, int txtsize )
  * */
 bool horspool_search ( char *txt, int txtLen, char *match, int matchLen )
 {
-	int i;
+	int i, shift;
 	int badCharHtable[256];
 
 	for ( i = 0; i < matchLen; i++ )
@@ -86,7 +90,7 @@ bool horspool_search ( char *txt, int txtLen, char *match, int matchLen )
 	while ( i < 256 )
 		badCharHtable[i++] = -1;
 
-	int shift = 0;
+	shift = 0;
 
 	while ( shift <= txtLen - matchLen )
 		{
@@ -99,13 +103,15 @@ bool horspool_search ( char *txt, int txtLen, char *match, int matchLen )
 				{
 					return true;
 
-					if ( shift + matchLen < txtLen )
-						shift += matchLen - badCharHtable[ ( int ) txt[shift + matchLen]];
-					else
-						shift += 1;
+					// FIX: Unreachable code.
+
+					//if ( shift + matchLen < txtLen )
+					//  shift += matchLen - badCharHtable[ ( int ) txt[shift + matchLen]];
+					//else
+					//  shift += 1;
 				}
 			else
-				shift += max ( 1, nInd - badCharHtable[ ( int ) txt[shift + nInd]] );
+				shift += max ( 1, nInd - badCharHtable[ ( int ) txt[shift + nInd] ] );
 		}
 
 	return false;
@@ -120,33 +126,46 @@ bool horspool_search ( char *txt, int txtLen, char *match, int matchLen )
 */
 bool Rabin_Karp_search ( char *input, int input_len, char *match, int match_len )
 {
-	int var1 = 0, var2 = 0, i = 1, j = 0, z = 1, sub = 0;
+	// FIX: var1, var2 and z being a bitmap, should be unsigned.
+	unsigned int var1, var2, z;
+	int i, j, sub;
 
-	while ( i < match_len )
-		{
-			z = ( z << 1 );
-			i++;
-		}
+	// FIX: Don't need a loop here!
+	// FIXME: What if 'match_len' is greater than 31?
 
+	//    while ( i < match_len )
+	//        {
+	//            z <<= 1;
+	//            i++;
+	//        }
+	i = match_len - 1;
+	z = 1;
+
+	if ( i > 0 )
+		z <<= i;
+
+	// FIXME: What if 'match_len' is greater than 31?
 	i = 0;
+	var1 = var2 = 0;
 
 	while ( i < match_len )
 		{
-			var1 = ( ( var1 << 1 ) + match[i] );
-			var2 = ( ( var2 << 1 ) + input[i] );
+			var1 = ( var1 << 1 ) + match[i];
+			var2 = ( var2 << 1 ) + input[i];
 			i++;
 		}
 
-	j = 0;
 
 	sub = input_len - match_len;
+
+	j = 0;
 
 	while ( j <= sub )
 		{
 			if ( var1 == var2 && memcmp ( match, input + j, match_len ) == 0 )
 				return true;
 
-			var2 = ( ( ( var2 ) - ( input[j] ) * z ) << 1 ) + ( input[j + match_len] );
+			var2 = ( ( ( var2 ) - ( input[j] ) * z ) << 1 ) + input[j + match_len];
 			++j;
 		}
 
@@ -158,16 +177,18 @@ bool pcre_regex_search ( const char *string, int string_len, const char *express
 	const char *err;
 	int errofs = 0, offset = 0;
 	int ovector[100];
+	int rc;
 
 	pcre *re = pcre_compile ( expression, 0, &err, &errofs, NULL );
 
 	if ( re == NULL )
 		{
 			DEBUG ( " regex compilation failed : %s\n", expression );
-			exit ( 0 );
+			exit ( 1 );
 		}
 
-	int rc = pcre_exec ( re, NULL, string, string_len, offset, 0, ovector, sizeof ovector / sizeof ovector[0] );
+	rc = pcre_exec ( re, NULL, string, string_len, offset, 0, ovector, sizeof ovector / sizeof ovector[0] );
+
 	pcre_free ( re );
 
 	return rc > 0;
