@@ -67,7 +67,7 @@ void load_signal_alarm ( void )
 		}
 }
 
-char from_hex ( char ch )
+static char from_hex ( char ch )
 {
 	return isdigit ( ch ) ? ch - '0' : tolower ( ch ) - 'a' + 10;
 }
@@ -82,20 +82,19 @@ char *urldecode ( char *str, int size )
 				{
 					if ( pstr[1] && pstr[2] )
 						{
-							*pbuf++ = from_hex ( pstr[1] ) << 4 | from_hex ( pstr[2] );
+							*pbuf++ = ( from_hex ( pstr[1] ) << 4 ) | from_hex ( pstr[2] );
 							pstr += 2;
 						}
 				}
 			else if ( *pstr == '+' )
 				*pbuf++ = ' ';
-
 			else
 				*pbuf++ = *pstr;
 
 			pstr++;
 		}
 
-	*pbuf = '\0';
+	*pbuf = 0;
 
 	return buf;
 }

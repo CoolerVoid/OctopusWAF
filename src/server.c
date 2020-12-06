@@ -49,8 +49,8 @@ void start_octopus_server ( void )
 			die ( "Program closes" );
 		}
 
-	burn_mem ( &listen_on_addr, 0, sizeof listen_on_addr );
 	socklen = sizeof listen_on_addr;
+	burn_mem ( &listen_on_addr, 0, socklen );
 
 	if ( evutil_parse_sockaddr_port ( param.hostarg,
 	                                  ( struct sockaddr * ) &listen_on_addr, &socklen ) < 0 )
@@ -67,7 +67,7 @@ void start_octopus_server ( void )
 			if ( p < 1 || p > 65535 )
 				die ( "Port is not ok" );
 
-			socklen = sizeof ( struct sockaddr_in );
+			socklen = sizeof *sin;
 
 			if ( sin->sin_family == AF_INET )
 				{
@@ -78,13 +78,14 @@ void start_octopus_server ( void )
 				{
           // FIXME: Assuming V4MAPPED IPv6 here... This can be problematic!
 					struct sockaddr_in6 *sin6 = ( struct sockaddr_in6 * ) &sin;
+
 					sin->sin_port = ntohs ( sin6->sin6_port );
 					sin->sin_addr.s_addr =  htonl ( 0x7f000001 ); //&((struct sockaddr_in6*)&sin)->sin6_addr;
 				}
 		}
 
-	burn_mem ( &connect_to_addr, 0, sizeof ( connect_to_addr ) );
-	connect_to_addrlen = sizeof ( connect_to_addr );
+	connect_to_addrlen = sizeof connect_to_addr;
+	burn_mem ( &connect_to_addr, 0, connect_to_addrlen );
 
 	if ( evutil_parse_sockaddr_port ( param.redirectarg, ( struct sockaddr * ) &connect_to_addr, &connect_to_addrlen ) < 0 )
 		die ( "Port is not ok in argv" );

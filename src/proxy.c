@@ -32,6 +32,7 @@ char *addr_2_str ( struct sockaddr *res )
 			case AF_INET:
 			{
 				struct sockaddr_in *addr_in = ( struct sockaddr_in * ) res;
+
 				s = xmalloc ( INET_ADDRSTRLEN );
 				inet_ntop ( AF_INET, & ( addr_in->sin_addr ), s, INET_ADDRSTRLEN );
 				break;
@@ -40,6 +41,7 @@ char *addr_2_str ( struct sockaddr *res )
 			case AF_INET6:
 			{
 				struct sockaddr_in6 *addr_in6 = ( struct sockaddr_in6 * ) res;
+
 				s = xmalloc ( INET6_ADDRSTRLEN );
 				inet_ntop ( AF_INET6, & ( addr_in6->sin6_addr ), s, INET6_ADDRSTRLEN );
 				break;
@@ -72,12 +74,12 @@ void block_msg ( struct bufferevent *bev )
 bool filter_check ( struct bufferevent *bev )
 {
 	struct evbuffer *input = bufferevent_get_input ( bev );
-
 	size_t len = evbuffer_get_length ( input );
-	char *data = NULL;
+	char *data;
 	bool test = false;
 
 	data = xmalloc ( len );
+
 	evbuffer_copyout ( input, data, len );
 
 	char *tmpbuf = urldecode ( data, strlen ( data ) );
@@ -90,7 +92,7 @@ bool filter_check ( struct bufferevent *bev )
 				{
 					test = true;
 
-					if ( param.debug == true )
+					if ( param.debug )
 						printf ( "input: %s\n", data );
 				}
 		}
@@ -125,7 +127,6 @@ void readcb ( struct bufferevent *bev, void *ctx )
 		}
 	else
 		{
-
 			dst = bufferevent_get_output ( partner );
 			evbuffer_add_buffer ( dst, src );
 
@@ -275,4 +276,3 @@ void accept_cb ( struct evconnlistener *listener, evutil_socket_t fd,
 
 	free ( addr_ip );
 }
-

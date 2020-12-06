@@ -42,7 +42,6 @@
 void die ( char *msg );
 void no_write_coredump ( void );
 void load_signal_alarm ( void );
-char from_hex ( char ch );
 char *urldecode ( char *str, int size ) ;
 char *deadspace ( char *str );
 int test_letter ( char p );

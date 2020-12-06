@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <signal.h>
 
+#include "matchlist.h"
 #include "utils.h"
 #include "opt_extract.h"
 #include "server.h"
@@ -23,6 +24,7 @@ int main ( int argc, char *argv[] )
 	parser_opts ( argc, argv );
 
 	init_banner_octopus();
+  preload_rules();
 	start_octopus_server();
 
 	return 0;

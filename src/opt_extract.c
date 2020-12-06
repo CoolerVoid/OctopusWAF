@@ -74,8 +74,8 @@ void parser_opts ( int argc, char **argv )
 				// host
 				case 'h':
 
-					// FIXME: Why to allocate 128 bytes for hostarg if the option is limited to 64 chars?
-					//        Yet, 'optarg' is a copy of argv[n]. Don't need to use any special strlen function!
+					// FIX: Why to allocate 128 bytes for hostarg if the option is limited to 64 chars?
+					//      Yet, 'optarg' is a copy of argv[n]. Don't need to use any special strlen function!
 					if ( strlen ( optarg ) <= 64 )
             param.hostarg = optarg;
 					else
@@ -85,8 +85,8 @@ void parser_opts ( int argc, char **argv )
 
 				case 'r':
 
-					// FIXME: Why to allocate 128 bytes for recirectarg if the option is limited to 64 chars?
-					//        Yet, 'optarg' is a copy of argv[n]. Don't need to use any special strlen function!
+					// FIX: Why to allocate 128 bytes for recirectarg if the option is limited to 64 chars?
+					//      Yet, 'optarg' is a copy of argv[n]. Don't need to use any special strlen function!
 					if ( strlen ( optarg ) <= 64 )
             param.redirectarg = optarg;
 					else
