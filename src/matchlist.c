@@ -105,7 +105,10 @@ void preload_rules ( void )
 If match context with request return array of void pointer with:
 if true returns matched string
 */
-char *matchlist ( char *input, int input_len, short option_algorithm )
+// FIX: This function is used only in 'filter_check()' function @ proxy.c.
+//      There, the return value is used as a boolean (NULL = false, not NULL true),
+//      so, I changed here the return valur to bool.
+bool matchlist ( char *input, int input_len, short option_algorithm )
 {
 	bool at_list = false;
 	size_t size;
@@ -145,9 +148,5 @@ char *matchlist ( char *input, int input_len, short option_algorithm )
       p++;
 		}
 
-  // FIXME: This is probably WRONG!
-	if ( at_list )
-		return *p;
-
-	return NULL;
+  return at_list;
 }

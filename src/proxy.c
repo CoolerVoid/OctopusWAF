@@ -76,7 +76,7 @@ bool filter_check ( struct bufferevent *bev )
 	struct evbuffer *input = bufferevent_get_input ( bev );
 	size_t len = evbuffer_get_length ( input );
 	char *data;
-	bool test = false;
+	bool match = false;
 
 	data = xmalloc ( len );
 
@@ -86,21 +86,16 @@ bool filter_check ( struct bufferevent *bev )
 
 	if ( is_request ( tmpbuf ) )
 		{
-			char *match_string = matchlist ( tmpbuf, strlen ( tmpbuf ), param.option_algorithm );
+			match = matchlist ( tmpbuf, strlen ( tmpbuf ), param.option_algorithm );
 
-			if ( match_string != NULL )
-				{
-					test = true;
-
-					if ( param.debug )
-						printf ( "input: %s\n", data );
-				}
+			if ( match )
+				if ( param.debug )
+					printf ( "input: %s\n", data );
 		}
 
 	free ( data );
-//	free(tmpbuf);
 
-	return test;
+	return match;
 }
 
 void readcb ( struct bufferevent *bev, void *ctx )
