@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <stdbool.h>
+#include <stdarg.h>
 #include <unistd.h>
 #include <signal.h>
 #include <sys/resource.h>
@@ -10,10 +10,15 @@
 #include "utils.h"
 #include "mem_ops.h"
 
-void die ( char *msg )
+void die ( char *fmt, ... )
 {
-	puts ( msg );
-	exit ( 0 ); // FIXME: Should be EXIT_FAILURE, isn't it?
+  va_list args;
+
+  va_start( args, fmt );
+  vfprintf( stderr, fmt, args );
+  va_end( args );
+
+	exit ( EXIT_FAILURE );
 }
 
 static void No_Pause_Waf( int sig )
@@ -58,10 +63,7 @@ void load_signal_alarm ( void )
 	while ( *p )
 		{
 			if ( sigaction ( *p, &sigIntHandler, NULL ) )
-				{
-					DEBUG ( "Error at signal" );
-					exit ( 0 );
-				}
+        die( "Error at signal" );
 
 			p++;
 		}

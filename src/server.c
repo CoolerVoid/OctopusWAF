@@ -50,7 +50,7 @@ void start_octopus_server ( void )
 		}
 
 	socklen = sizeof listen_on_addr;
-	burn_mem ( &listen_on_addr, 0, socklen );
+	memset ( &listen_on_addr, 0, socklen );
 
 	if ( evutil_parse_sockaddr_port ( param.hostarg,
 	                                  ( struct sockaddr * ) &listen_on_addr, &socklen ) < 0 )
@@ -85,7 +85,7 @@ void start_octopus_server ( void )
 		}
 
 	connect_to_addrlen = sizeof connect_to_addr;
-	burn_mem ( &connect_to_addr, 0, connect_to_addrlen );
+	memset ( &connect_to_addr, 0, connect_to_addrlen );
 
 	if ( evutil_parse_sockaddr_port ( param.redirectarg, ( struct sockaddr * ) &connect_to_addr, &connect_to_addrlen ) < 0 )
 		die ( "Port is not ok in argv" );

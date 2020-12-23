@@ -1,10 +1,10 @@
-#include <stdbool.h>
+#include <stdlib.h>
 #include <pcre.h>
 
 #include "match_algorithms.h"
 #include "utils.h"
 
-int NextMachineState ( char *pat, int M, int state, int x )
+static int NextMachineState ( char *pat, int M, int state, int x )
 {
 	// FIX: 'register' reserved word don't do what most people think it does!
 	int fix, i;
@@ -46,7 +46,7 @@ static void write_tf ( char *pat, int M, int TF[][256] )
 }
 
 /* Prints all occurrences of pat in txt */
-bool DFA_Search ( char *pat, int patsize, char *txt, int txtsize )
+int DFA_Search ( char *pat, int patsize, char *txt, int txtsize )
 {
 	// FIXME: Could be too much pressure on stack.
 	//        Better to change it to heap allocation.
@@ -62,12 +62,12 @@ bool DFA_Search ( char *pat, int patsize, char *txt, int txtsize )
 			state = TF[state][ ( int ) txt[i] ];
 
 			if ( state == patsize )
-				return true;
+				return 1;
 
 			i++;
 		}
 
-	return false;
+	return 0;
 }
 
 /*
@@ -79,7 +79,7 @@ bool DFA_Search ( char *pat, int patsize, char *txt, int txtsize )
  * matchLen = len of string match
  *
  * */
-bool horspool_search ( char *txt, int txtLen, char *match, int matchLen )
+int horspool_search ( char *txt, int txtLen, char *match, int matchLen )
 {
 	int i, shift;
 	int badCharHtable[256];
@@ -100,21 +100,12 @@ bool horspool_search ( char *txt, int txtLen, char *match, int matchLen )
 				nInd--;
 
 			if ( nInd < 0 )
-				{
-					return true;
+				return 1;
 
-					// FIX: Unreachable code.
-
-					//if ( shift + matchLen < txtLen )
-					//  shift += matchLen - badCharHtable[ ( int ) txt[shift + matchLen]];
-					//else
-					//  shift += 1;
-				}
-			else
-				shift += max ( 1, nInd - badCharHtable[ ( int ) txt[shift + nInd] ] );
+			shift += max ( 1, nInd - badCharHtable[ ( int ) txt[shift + nInd] ] );
 		}
 
-	return false;
+	return 0;
 }
 
 /* Rabin–Karp algorithm - https://en.wikipedia.org/wiki/Rabin%E2%80%93Karp_algorithm
@@ -124,7 +115,7 @@ bool horspool_search ( char *txt, int txtLen, char *match, int matchLen )
  * match_len = len of string match
  *
 */
-bool Rabin_Karp_search ( char *input, int input_len, char *match, int match_len )
+int Rabin_Karp_search ( char *input, int input_len, char *match, int match_len )
 {
 	// FIX: var1, var2 and z being a bitmap, should be unsigned.
 	unsigned int var1, var2, z;
@@ -155,7 +146,6 @@ bool Rabin_Karp_search ( char *input, int input_len, char *match, int match_len 
 			i++;
 		}
 
-
 	sub = input_len - match_len;
 
 	j = 0;
@@ -163,16 +153,16 @@ bool Rabin_Karp_search ( char *input, int input_len, char *match, int match_len 
 	while ( j <= sub )
 		{
 			if ( var1 == var2 && memcmp ( match, input + j, match_len ) == 0 )
-				return true;
+				return 1;
 
 			var2 = ( ( ( var2 ) - ( input[j] ) * z ) << 1 ) + input[j + match_len];
 			++j;
 		}
 
-	return false;
+	return 0;
 }
 
-bool pcre_regex_search ( const char *string, int string_len, const char *expression )
+int pcre_regex_search ( const char *string, int string_len, const char *expression )
 {
 	const char *err;
 	int errofs = 0, offset = 0;
@@ -184,7 +174,7 @@ bool pcre_regex_search ( const char *string, int string_len, const char *express
 	if ( re == NULL )
 		{
 			DEBUG ( " regex compilation failed : %s\n", expression );
-			exit ( 1 );
+			exit ( EXIT_FAILURE );
 		}
 
 	rc = pcre_exec ( re, NULL, string, string_len, offset, 0, ovector, sizeof ovector / sizeof ovector[0] );

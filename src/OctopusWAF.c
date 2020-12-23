@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <stdlib.h>
 #include <signal.h>
 
 #include "matchlist.h"
@@ -27,5 +28,5 @@ int main ( int argc, char *argv[] )
   preload_rules();
 	start_octopus_server();
 
-	return 0;
+	return EXIT_SUCCESS;
 }

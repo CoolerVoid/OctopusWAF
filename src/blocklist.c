@@ -1,43 +1,43 @@
 #include <stdio.h>
-#include <stdbool.h>
+#include <stdlib.h>
 #include <string.h>
 
 #include "blocklist.h"
 #include "utils.h"
 
 //read lines of file
-bool blocklist_ip ( char *addr )
+int blocklist_ip ( char *addr )
 {
-	FILE *arq;
-	bool at_list = false;
+	FILE *fin;
+	int at_list = 0;
 
   // FIX: Let's allocate dynamically the line, so line of any size can be processed.
   char *line;
   size_t size;
 
-	arq = fopen ( "config/blocklist_ip.txt", "r" );
+	fin = fopen ( "config/blocklist_ip.txt", "r" );
 
-	if ( arq == NULL )
+	if ( fin == NULL )
 		{
 			DEBUG ( "error to open() file" );
-			exit ( 0 );
+			exit ( EXIT_FAILURE );
 		}
 
   line = NULL; size = 0;
-  while ( getline( &line, &size, arq ) != -1 && ! at_list )
+  while ( getline( &line, &size, fin ) != -1 && ! at_list )
     {
       if ( strstr( line, addr ) )
-        at_list = true;
+        at_list = 1;
 
       free( line );
       line = NULL;
       size = 0;
     }
 
-	if ( fclose ( arq ) == EOF )
+	if ( fclose ( fin ) == EOF )
 		{
 			DEBUG ( "Error in close() file config/blocklist_ip.txt " );
-			return false;
+			return 0;
 		}
 
 	return at_list;

@@ -20,10 +20,9 @@
 			fprintf( stderr, "\n\n--- DEBUG-END ---\n" ); \
 		} while (0);
 
-// FIXME: Shouldn't be EXIT_FAILURE insted of 0 in exit() call?
 #define DIE(x) do {\
 			DEBUG( x ); \
-			exit( 0 ); \
+			exit( EXIT_FAILURE ); \
 		} while (0);
 
 // ANSI control sequences
@@ -39,7 +38,7 @@
 #endif
 #define max(a,b) ((a)>(b)?(a):(b))
 
-void die ( char *msg );
+void die ( char *fmt, ... );
 void no_write_coredump ( void );
 void load_signal_alarm ( void );
 char *urldecode ( char *str, int size ) ;
